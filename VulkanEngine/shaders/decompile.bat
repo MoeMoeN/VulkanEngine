@@ -1,0 +1,2 @@
+C:/VulkanSDK/1.3.283.0/Bin/spirv-dis.exe ./spv/simple_shader.vert.spv -o ./disasm/simple_shader.vert.disasm
+C:/VulkanSDK/1.3.283.0/Bin/spirv-dis.exe ./spv/simple_shader.frag.spv -o ./disasm/simple_shader.frag.disasm
