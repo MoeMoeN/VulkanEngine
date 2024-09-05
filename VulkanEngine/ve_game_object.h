@@ -55,6 +55,7 @@ public:
 	}
 
 	static VeGameObject makePointLight(float intensity = 10.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
+	static VeGameObject setAsGlobalGrid();
 
 	VeGameObject(const VeGameObject&) = delete;
 	VeGameObject &operator=(const VeGameObject&) = delete;
@@ -68,6 +69,8 @@ public:
 
 	glm::vec3 color{};
 	TransformComponent transform{};
+	
+	bool isGlobalGrid = false;
 
 	//Optional pointer components
 	std::shared_ptr<VeModel> model{};

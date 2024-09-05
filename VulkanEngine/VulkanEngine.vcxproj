@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="app.h" />
     <ClInclude Include="keyboard_movement_controller.h" />
+    <ClInclude Include="systems\global_grid_render_system.h" />
     <ClInclude Include="systems\point_light_render_system.h" />
     <ClInclude Include="systems\simple_render_system.h" />
     <ClInclude Include="ve_buffer.h" />
@@ -40,6 +41,7 @@
     <ClCompile Include="app.cpp" />
     <ClCompile Include="keyboard_movement_controller.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="systems\global_grid_render_system.cpp" />
     <ClCompile Include="systems\point_light_render_system.cpp" />
     <ClCompile Include="systems\simple_render_system.cpp" />
     <ClCompile Include="ve_buffer.cpp" />
@@ -54,6 +56,13 @@
     <ClCompile Include="ve_window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\compile.bat" />
+    <None Include="shaders\decompile.bat" />
+    <None Include="shaders\global_grid.frag" />
+    <None Include="shaders\global_grid.vert" />
+    <None Include="shaders\point_light.frag" />
+    <None Include="shaders\point_light.vert" />
+    <None Include="shaders\simple_shader.frag" />
     <None Include="shaders\simple_shader.vert" />
     <None Include="shaders\spv\simple_shader.frag.spv" />
     <None Include="shaders\spv\simple_shader.vert.spv" />

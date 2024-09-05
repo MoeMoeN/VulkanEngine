@@ -71,4 +71,11 @@ namespace ve {
 		return gameObj;
 	}
 
+	VeGameObject VeGameObject::setAsGlobalGrid()
+	{
+		VeGameObject obj = VeGameObject::createGameObject();
+		obj.isGlobalGrid = true;
+		return obj;
+	}
+
 }

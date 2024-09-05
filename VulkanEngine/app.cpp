@@ -2,6 +2,7 @@
 
 #include "systems/simple_render_system.h"
 #include "systems/point_light_render_system.h"
+#include "systems/global_grid_render_system.h"
 #include "ve_camera.h"
 #include "ve_buffer.h"
 
@@ -66,6 +67,7 @@ namespace ve {
 
 		SimpleRenderSystem simpleRenderSystem{ veDevice, veRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
 		PointLightRenderSystem pointLightRenderSystem{ veDevice, veRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout() };
+		GridRenderSystem GlobalGridRenderSystem{ veDevice, veRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout() };
 		VeCamera camera{};
 
 		//create ,,viewer object" which is like root object of camera (camera would get transformation from that object)
@@ -96,7 +98,7 @@ namespace ve {
 
 			float aspect = veRenderer.getAspectRatio();
 			//camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
-			camera.setPerspectiveProjection(camera.HFOVtoVFOV(glm::radians(38.5f), aspect), aspect, 0.1f, 10.0f);
+			camera.setPerspectiveProjection(camera.HFOVtoVFOV(glm::radians(38.5f), aspect), aspect, 0.1f, 500.0f);
 
 			if (auto commandBuffer = veRenderer.beginFrame()) {
 				//reason for splitting functions into begin and end funcitons:
@@ -131,6 +133,7 @@ namespace ve {
 				// oreder here matters, opaque first for simple transparency
 				simpleRenderSystem.renderGameObjects(frameInfo);
 				pointLightRenderSystem.render(frameInfo);
+				GlobalGridRenderSystem.render(frameInfo);
 
 				//
 				veRenderer.endSwapChainRenderPass(commandBuffer);
@@ -142,16 +145,27 @@ namespace ve {
 	}
 
 	void App::loadGameObjects() {
-		std::shared_ptr<VeModel> veModel = VeModel::createModelFromFile(veDevice, "models/flat_vase.obj");
+
+		//GLOBAL GRID
+		auto globalGrid = VeGameObject::setAsGlobalGrid();
+		globalGrid.transform.translation = { 0.0f, 0.f, 0.0f };
+		globalGrid.transform.scale = { 1.f, 1.f, 1.f };
+		globalGrid.color = { 1.f, 1.f, 1.f };
+
+		veGameObjects.emplace(globalGrid.getId(), std::move(globalGrid));
+
+		
+		std::shared_ptr<VeModel> veModel = VeModel::createModelFromFile(veDevice, "models/stanford_dragon.obj");
 
 		auto gameObj = VeGameObject::createGameObject();
 		gameObj.model = veModel;
-		gameObj.transform.translation = { -0.5f, 0.f, 0.0f };
+		gameObj.transform.translation = { -0.0f, 0.f, 0.0f };
 		gameObj.transform.scale = { 3.f, 3.f, 3.f };
 		gameObj.color = { 1.f, 1.f, 1.f };
 
 		veGameObjects.emplace(gameObj.getId(), std::move(gameObj));
 
+		/*
 
 		veModel = VeModel::createModelFromFile(veDevice, "models/smooth_vase.obj");
 
@@ -174,6 +188,8 @@ namespace ve {
 
 		veGameObjects.emplace(floorObj.getId(), std::move(floorObj));
 
+		*/
+
 		/*
 		* POINT LIGHTS
 		*/
@@ -184,6 +200,7 @@ namespace ve {
 			veGameObjects.emplace(pointLight.getId(), std::move(pointLight));
 		}
 		*/
+		/*
 		std::vector<glm::vec3> lightColors{
 			{1.f, .1f, .1f},
 			{ .1f, .1f, 1.f },
@@ -192,13 +209,19 @@ namespace ve {
 			{ .1f, 1.f, 1.f },
 			{ 1.f, 1.f, 1.f }  //
 		};
+		*/
+		std::vector<glm::vec3> lightColors{
+			{1.f, 1.f, 1.f},
+			{0.5f, 0.5f, 1.f},
+			{0.5f, 1.f, 0.5f}
+		};
 
-		for (int i = 0; i < lightColors.size(); i++) {
+		for (int i = 0; i < lightColors.size(); i++) { 
 			auto pointLight = VeGameObject::makePointLight(0.5f, 0.02f+0.005f*i);
 			pointLight.color = lightColors[i];
 
 			auto rotateLight = glm::rotate(glm::mat4(1.f), (i * glm::two_pi<float>()) / lightColors.size(), { 0.f, -1.f, 0.f });
-			pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, -0.1f*i-0.1f, -1.f, -1.f));
+			pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, -0.5f/* *i - 0.1f*/, -1.f, -1.f));
 
 			veGameObjects.emplace(pointLight.getId(), std::move(pointLight));
 		}
