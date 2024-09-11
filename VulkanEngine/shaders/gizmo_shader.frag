@@ -41,30 +41,31 @@ void main(){
     vec3 cameraWorldPosition = ubo.inverseViewMatrix[3].xyz;
     vec3 surfaceToViewerDirection = normalize(cameraWorldPosition - fragWorldPosition);
 
-    for (int i = 0; i < ubo.numLights; i++){
-        PointLight light = ubo.pointLights[i];
-        vec3 directionToLight = light.position.xyz - fragWorldPosition;
+    outColor = vec4(fragColor, 1.0);
+    // for (int i = 0; i < ubo.numLights; i++){
+    //     PointLight light = ubo.pointLights[i];
+    //     vec3 directionToLight = light.position.xyz - fragWorldPosition;
 
-        float distanceSquared = dot(directionToLight, directionToLight);
-        float attenuation = calculateAttenuation(distanceSquared, 1.0, 0.09, 0.032);
+    //     float distanceSquared = dot(directionToLight, directionToLight);
+    //     float attenuation = calculateAttenuation(distanceSquared, 1.0, 0.09, 0.032);
         
-        directionToLight = normalize(directionToLight);
+    //     directionToLight = normalize(directionToLight);
 
-        float cosAngIncidence = max(dot(surfaceWorldSpaceNormal, directionToLight), 0);
+    //     float cosAngIncidence = max(dot(surfaceWorldSpaceNormal, directionToLight), 0);
 
-        vec3 intensity = light.color.xyz * light.color.w * attenuation;
+    //     vec3 intensity = light.color.xyz * light.color.w * attenuation;
 
-        diffuseLight += intensity * cosAngIncidence;
+    //     diffuseLight += intensity * cosAngIncidence;
 
-        //spec
-        vec3 halfAngle = normalize(directionToLight + surfaceToViewerDirection);
-        float blinnTerm = dot(surfaceWorldSpaceNormal, halfAngle);
-        blinnTerm = max(blinnTerm, 0);
-        blinnTerm = pow(blinnTerm, 32.0); // higher values -> sharper highlight
-        specularLight += intensity * blinnTerm;
-    }
+    //     //spec
+    //     vec3 halfAngle = normalize(directionToLight + surfaceToViewerDirection);
+    //     float blinnTerm = dot(surfaceWorldSpaceNormal, halfAngle);
+    //     blinnTerm = max(blinnTerm, 0);
+    //     blinnTerm = pow(blinnTerm, 32.0); // higher values -> sharper highlight
+    //     specularLight += intensity * blinnTerm;
+    // }
     //spec multiplied by fragColor to imitate metalic materials (that should be parameter)
-    outColor = vec4(diffuseLight * fragColor + specularLight * fragColor, 1.0);
+    //outColor = vec4(diffuseLight * fragColor + specularLight * fragColor, 1.0);
     //outColor = vec4(attenuation.xxx, 1.0);
 }
 

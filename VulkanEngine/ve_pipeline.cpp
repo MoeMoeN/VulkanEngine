@@ -113,6 +113,15 @@ namespace ve {
 		configInfo.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;             
 	}
 
+	void VePipeline::disableDepthTesting(PipelineConfigInfo& configInfo)
+	{
+		configInfo.depthStencilInfo.depthTestEnable = VK_FALSE;  // Disable depth testing
+		configInfo.depthStencilInfo.depthWriteEnable = VK_FALSE; // Disable depth writes
+		configInfo.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS; // Can be any value since the depth test is disabled
+		configInfo.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
+		configInfo.depthStencilInfo.stencilTestEnable = VK_FALSE;
+	}
+
 	std::vector<char> VePipeline::readFile(const std::string& filepath) {
 		//std::cout << "Current working directory: " << std::filesystem::current_path() << std::endl;
 		//std::cout << "Attempting to open file: " << filepath << std::endl;

@@ -17,6 +17,7 @@ layout(set = 0, binding = 0) uniform GlobalUbo {
     vec4 ambientLightColor; //w is intenstiy
     PointLight pointLights[10]; //hardcoded 10 can be changed using specialization constants
     int numLights;
+    int debugMode;
 } ubo;
 
 layout(push_constant) uniform Push {
@@ -61,25 +62,26 @@ float zLine(vec3 worldPos, float thickness, float sm){
 }
 
 /*
-TODO:
-    - //uzywac discard tam gdzie nie ma grida (performance)
-    - zrobic ladny grid (blender grid as reference)
-    - performancowo ok (zeby nie bylo wstydu jakby zerkneli w kod)
-    - smoothstep aby nie bylo aliasing problemow
-    - pozbyc sie artefaktow na odleglosc
+
 */
 
 void main(){
+    //calculate common parameters
     vec3 cameraWorldPosition = ubo.inverseViewMatrix[3].xyz;
     float distanceToFrag = length(cameraWorldPosition - fragWorldPosition);
 
+    //scaling with distance
+    float distanceScaling = clamp(distanceToFrag/10.0, 0, 1);
+    float GridThicknessWithScaling = mix(GRID_THICKNESS*0.1, GRID_THICKNESS*2.0, distanceScaling);
+    float GridSmoothnessWithScaling = mix(GRID_SMOOTHNESS*0.1, GRID_SMOOTHNESS*2.0, distanceScaling);
+
     //make simple grids
-    float gridUnit = grid(fragWorldPosition, GRID_CELL_SIZE, GRID_THICKNESS, GRID_SMOOTHNESS);
-    float gridSubUnit = grid(fragWorldPosition, 10.0*GRID_CELL_SIZE, 5.0*GRID_THICKNESS, 10.0*GRID_SMOOTHNESS);
+    float gridUnit = grid(fragWorldPosition, GRID_CELL_SIZE, GridThicknessWithScaling, GridSmoothnessWithScaling);
+    float gridSubUnit = grid(fragWorldPosition, 10.0*GRID_CELL_SIZE, 5.0*GridThicknessWithScaling, 10.0*GridSmoothnessWithScaling);
 
     //make global lines
-    float xline = xLine(fragWorldPosition, GRID_THICKNESS*1.0, GRID_SMOOTHNESS*2);
-    float zline = clamp(zLine(fragWorldPosition, GRID_THICKNESS*1.0, GRID_SMOOTHNESS*2) - xline, 0, 1); //-xline so there's no overlap
+    float xline = xLine(fragWorldPosition, GridThicknessWithScaling*1.0, GridSmoothnessWithScaling*2);
+    float zline = clamp(zLine(fragWorldPosition, GridThicknessWithScaling*1.0, GridSmoothnessWithScaling*2) - xline, 0, 1); //-xline so there's no overlap
 
     //discard when no grid
     if (gridSubUnit+gridUnit+xline+zline < 0.001){
@@ -117,9 +119,7 @@ void main(){
     xlineColor *= xline;
     zlineColor *= zline;
 
-    //vec3 centerPointR = vec3(xline*zline*xlineColor.x, 0.0, 0.0);
     //add grids together to compose final grid.
-    //outColor = vec4(xline, 0.0, 0.0, 1.0);
     outColor = vec4(gridUnitColor+gridSubUnitColor+xlineColor+zlineColor, .7*(gridUnitAlpha+gridSubUnitAlpha+xlineAlpha+zlineAlpha));
 
 }

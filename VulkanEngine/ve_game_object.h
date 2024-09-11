@@ -8,6 +8,7 @@
 //std
 #include <memory>
 #include <unordered_map>
+#include <iostream>
 
 namespace ve {
 
@@ -51,6 +52,7 @@ public:
 
 	static VeGameObject createGameObject() {
 		static id_t currentId = 0;
+		std::cout << "current object ID: " << currentId << std::endl;
 		return VeGameObject{ currentId++ };
 	}
 
@@ -71,6 +73,7 @@ public:
 	TransformComponent transform{};
 	
 	bool isGlobalGrid = false;
+	int pipelineID = 0;
 
 	//Optional pointer components
 	std::shared_ptr<VeModel> model{};

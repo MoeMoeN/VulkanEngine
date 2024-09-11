@@ -16,6 +16,7 @@ layout(set = 0, binding = 0) uniform GlobalUbo {
     vec4 ambientLightColor; //w is intenstiy
     PointLight pointLights[10]; //hardcoded 10 can be changed using specialization constants
     int numLights;
+    int debugMode;
 } ubo;
 
 layout(push_constant) uniform Push {

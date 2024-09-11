@@ -8,6 +8,8 @@ layout(location = 3) in vec3 uv;
 layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec3 fragWorldPosition;
 layout(location = 2) out vec3 fragWorldSpaceNormal;
+layout(location = 3) out vec3 fragLocalSpaceNormal;
+layout(location = 4) out vec3 fragUV;
 
 struct PointLight{
   vec4 position; //ignore w 
@@ -39,4 +41,6 @@ void main(){
     fragColor = vertColor;
     fragWorldPosition = worldPosition.xyz;
     fragWorldSpaceNormal = normalWorldSpace;
+    fragLocalSpaceNormal = vertNormal;
+    fragUV = uv;
 }

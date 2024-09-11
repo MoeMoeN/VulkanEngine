@@ -22,6 +22,7 @@ namespace ve {
 		alignas(16) glm::vec4 ambientLightColor{1.f, 1.f, 1.f, .02f}; //w is intensity
 		PointLight pointLight[MAX_LIGHTS];
 		int numLights;
+		int debugMode;
 	};
 
 	struct FrameInfo {

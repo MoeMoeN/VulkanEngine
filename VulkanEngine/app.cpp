@@ -78,10 +78,12 @@ namespace ve {
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
 
+		cameraController.createPrimitives(veDevice);
+
 		while (!veWindow.shouldClose()) {
 			glfwPollEvents();
 
-			/*TODO: 
+			/*TODO:
 			read about Game loop  https://gameprogrammingpatterns.com/game-loop.html
 			https://gafferongames.com/post/fix_your_timestep/
 
@@ -99,13 +101,12 @@ namespace ve {
 			float aspect = veRenderer.getAspectRatio();
 			//camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
 			camera.setPerspectiveProjection(camera.HFOVtoVFOV(glm::radians(38.5f), aspect), aspect, 0.1f, 500.0f);
+			
+			cameraController.transformSelectedGameObject(veWindow.getGLFWwindow(), veGameObjects, deltaTime);
+			cameraController.addPrimitive(veWindow.getGLFWwindow(), veGameObjects, veDevice);
 
 			if (auto commandBuffer = veRenderer.beginFrame()) {
-				//reason for splitting functions into begin and end funcitons:
-				//because then we can easily define different (offscreen) renderpasses like:
-				//begin offscreen shadow pass
-				//render shadow casting objects
-				//end offscren shadow pass
+
 		
 				int frameIndex = veRenderer.getFrameIndex();
 				FrameInfo frameInfo{
@@ -124,6 +125,7 @@ namespace ve {
 				ubo.view = camera.getView();
 				ubo.inverseView = camera.getInverseView();
 				pointLightRenderSystem.update(frameInfo, ubo);
+				ubo.debugMode = cameraController.switchDebugMode(veWindow.getGLFWwindow());
 				uboBuffers[frameIndex]->writeToBuffer(&ubo);
 				uboBuffers[frameIndex]->flush();
 
@@ -146,7 +148,7 @@ namespace ve {
 
 	void App::loadGameObjects() {
 
-		//GLOBAL GRID
+		//GLOBAL GRID ID 0
 		auto globalGrid = VeGameObject::setAsGlobalGrid();
 		globalGrid.transform.translation = { 0.0f, 0.f, 0.0f };
 		globalGrid.transform.scale = { 1.f, 1.f, 1.f };
@@ -154,16 +156,43 @@ namespace ve {
 
 		veGameObjects.emplace(globalGrid.getId(), std::move(globalGrid));
 
-		
-		std::shared_ptr<VeModel> veModel = VeModel::createModelFromFile(veDevice, "models/stanford_dragon.obj");
+		//GIZMO ID 1
+		std::shared_ptr<VeModel> veModel = VeModel::createModelFromFile(veDevice, "models/simple_gizmo.obj");
 
+		auto gizmoObj = VeGameObject::createGameObject();
+		gizmoObj.model = veModel;
+		gizmoObj.transform.translation = { -0.0f, 0.f, 0.0f };
+		gizmoObj.transform.scale = { 0.f, 0.f, 0.f };
+		gizmoObj.color = { 1.f, 1.f, 1.f };
+		gizmoObj.pipelineID = 2; //disabled depth test pipeline
+
+		veGameObjects.emplace(gizmoObj.getId(), std::move(gizmoObj));
+
+
+
+		///... models ... ///
+		//
+		veModel = VeModel::createModelFromFile(veDevice, "models/stanford_bunny.obj");
 		auto gameObj = VeGameObject::createGameObject();
 		gameObj.model = veModel;
 		gameObj.transform.translation = { -0.0f, 0.f, 0.0f };
 		gameObj.transform.scale = { 3.f, 3.f, 3.f };
 		gameObj.color = { 1.f, 1.f, 1.f };
+		gameObj.pipelineID = 0;
 
 		veGameObjects.emplace(gameObj.getId(), std::move(gameObj));
+
+		//
+		veModel = VeModel::createModelFromFile(veDevice, "models/stanford_bunny_VC.obj");
+		auto gameObj2 = VeGameObject::createGameObject();
+		gameObj2.model = veModel;
+		gameObj2.transform.translation = { -1.0f, 0.f, 0.0f };
+		gameObj2.transform.scale = { 3.f, 3.f, 3.f };
+		gameObj2.color = { 1.f, 1.f, 1.f };
+		gameObj2.transform.rotation = { 0.0f, 1.0f, 0.0f };
+		gameObj2.pipelineID = 1; //ID 1 --- debug mode
+
+		veGameObjects.emplace(gameObj2.getId(), std::move(gameObj2));
 
 		/*
 

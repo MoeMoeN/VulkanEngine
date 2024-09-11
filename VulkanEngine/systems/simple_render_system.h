@@ -15,7 +15,11 @@ namespace ve {
 	public:
 		const std::string VERT_FILEPATH = "shaders/spv/simple_shader.vert.spv";
 		const std::string FRAG_FILEPATH = "shaders/spv/simple_shader.frag.spv";
-
+		const std::string VERT_FILEPATH_DEBUG = "shaders/spv/debug_shader.vert.spv";
+		const std::string FRAG_FILEPATH_DEBUG = "shaders/spv/debug_shader.frag.spv";
+		const std::string VERT_FILEPATH_GIZMO = "shaders/spv/gizmo_shader.vert.spv";
+		const std::string FRAG_FILEPATH_GIZMO = "shaders/spv/gizmo_shader.frag.spv";
+		
 		SimpleRenderSystem(VeDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
 		~SimpleRenderSystem();
 
@@ -31,6 +35,8 @@ namespace ve {
 		VeDevice& veDevice;
 
 		std::unique_ptr<VePipeline> vePipeline;
+		std::unique_ptr<VePipeline> vePipelineDebug;
+		std::unique_ptr<VePipeline> vePipelineDisableDepthTest;
 		VkPipelineLayout pipelineLayout;
 	};
 

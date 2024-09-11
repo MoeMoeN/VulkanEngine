@@ -21,12 +21,35 @@ public:
 
 
     void moveInPlaneXZ(GLFWwindow* window, float deltaTime, VeGameObject& gameObject);
+    int switchDebugMode(GLFWwindow* window);
+    void transformSelectedGameObject(GLFWwindow* window, VeGameObject::Map& veGameObjects, float deltaTime);
+    void addPrimitive(GLFWwindow* window, VeGameObject::Map& veGameObjects, VeDevice& device);
+    void createPrimitives(VeDevice& device);
+
+    std::unique_ptr<VeModel> createCubeGeometry(VeDevice& device, glm::vec3 offset);
+    int previousKeyStatePrimitive = GLFW_RELEASE;
 
     KeyMappings keys{};
     float moveSpeed{ 3.f };
     float lookSpeed{ 1.5f };
 
+    using id_t = unsigned int;
+    id_t selectedObjectID = -1;
+    int previousKeyStateSelection = GLFW_RELEASE;
+    bool initial_empty_spawn = false;
+    
+    int debugModeID = -1;
+    int previousKeyState = GLFW_RELEASE;
 
+    std::shared_ptr<VeModel> Primitive1;
+    std::shared_ptr<VeModel> Primitive2;
+    std::shared_ptr<VeModel> Primitive3;
+    std::shared_ptr<VeModel> Primitive4;
+    std::shared_ptr<VeModel> Primitive5;
+    std::shared_ptr<VeModel> Primitive6;
+    std::shared_ptr<VeModel> Primitive7;
+    std::shared_ptr<VeModel> Primitive8;
+    std::shared_ptr<VeModel> Primitive9;
 };
 
 }
